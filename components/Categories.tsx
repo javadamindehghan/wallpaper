@@ -10,13 +10,16 @@ import {
 import React, {useEffect, useState} from 'react';
 import {data, categories} from '../constants/cetegories';
 import Animated, {FadeInRight} from 'react-native-reanimated';
-import { categoriesType } from '../type';
+import {categoriesType} from '../type';
 const {height, width} = Dimensions.get('window');
-export default function Categories({HandelChangeCategories ,searchValue}:{searchValue:string;HandelChangeCategories:(categories:categoriesType)=>void}) {
+export default function Categories({
+  HandelChangeCategories,
+  searchValue,
+}: {
+  searchValue: string;
+  HandelChangeCategories: (categories: categoriesType) => void;
+}) {
   const [dataCtegories, setDataCategories] = useState<string>('');
-  const hndleChangeCategories = (cat: string): void => {
-    setDataCategories(cat);
-  };
   const RenderItem = ({
     item,
     index,
@@ -26,9 +29,11 @@ export default function Categories({HandelChangeCategories ,searchValue}:{search
     index: number;
     isActive: boolean;
   }) => {
-    useEffect(()=>{if (searchValue ) {
-      setDataCategories('')
-    }},[searchValue])
+    useEffect(() => {
+      if (searchValue) {
+        setDataCategories('');
+      }
+    }, [searchValue]);
     return (
       <Animated.View
         entering={FadeInRight.delay(index * 25)
@@ -37,8 +42,7 @@ export default function Categories({HandelChangeCategories ,searchValue}:{search
         <TouchableOpacity
           onPress={() => {
             setDataCategories(item);
-            HandelChangeCategories(item)
-            
+            HandelChangeCategories(item);
           }}
           className="rounded-lg bg-orange-300"
           style={{
