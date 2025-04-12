@@ -4,12 +4,11 @@ import {
   Image,
   Dimensions,
   Text,
-  Pressable,
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, {FadeInDown, FadeOutDown} from 'react-native-reanimated';
+import Animated, {FadeInDown} from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 const {height, width} = Dimensions.get('window');
 export default function WelcomeScrenn() {

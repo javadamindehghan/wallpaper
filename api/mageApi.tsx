@@ -29,6 +29,7 @@ export const ApiCall = async (
     return response.data;
   } catch (error) {
     console.log(error);
+    Alert.alert('اتصال به اینترنت وفیلتر شکن را چک کنید');
    
   }
 };

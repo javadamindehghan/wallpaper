@@ -21,7 +21,7 @@ import ImageScreen from './screens/ImageScreen';
 function App(): React.JSX.Element {
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <BottomSheetModalProvider>
+      <BottomSheetModalProvider >
        
         <NavigationContainer>
           <Stack.Navigator screenOptions={{headerShown: false}}>

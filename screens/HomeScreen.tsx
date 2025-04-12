@@ -42,7 +42,11 @@ export default function HomeScreen() {
       category: currentCategories,
       ...count,
     });
-    setImage(result?.hits);
+    if (!result) {
+      Alert.alert('اتصال به اینترنت وفیلتر شکن را چک کنید');
+    } else {
+      setImage(result?.hits);
+    }
   };
   const HandelChangeCategories = (categories: categoriesType) => {
     setCurrentCategories(categories);
@@ -69,12 +73,11 @@ export default function HomeScreen() {
       setImage(c => {
         if (c && result?.hits) {
           return [...c, ...result?.hits];
-          
         }
       });
-      if (result?.hits.length>0) {
-        Page.current+=1
-       }
+      if (result?.hits.length > 0) {
+        Page.current += 1;
+      }
       console.log(result?.hits);
       console.log(Page.current);
     } else {
@@ -91,9 +94,9 @@ export default function HomeScreen() {
           return [...c, ...result?.hits];
         }
       });
-     if (result?.hits.length>0) {
-      Page.current+=1
-     }
+      if (result?.hits.length > 0) {
+        Page.current += 1;
+      }
     }
   };
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -181,9 +184,10 @@ export default function HomeScreen() {
         <View>{Image?.length && <ImageGrid image={Image} />}</View>
       </ScrollView>
       {/* Filter */}
-      <FiltersModal
-        bottomSheetModalRef={bottomSheetModalRef}
-      />
+   
+     
+        <FiltersModal bottomSheetModalRef={bottomSheetModalRef} />
+      
     </View>
   );
 }

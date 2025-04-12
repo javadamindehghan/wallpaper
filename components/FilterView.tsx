@@ -18,7 +18,7 @@ const FilterView = () => {
   });
   const {inc,count} = useStore();
   return (
-    <ScrollView>
+    <>
       <View className="mb-2">
         <Text className="font-bold text-2xl mb-2">Order</Text>
         <View className="  flex-row ">
@@ -48,7 +48,7 @@ const FilterView = () => {
                 onPress={() => {
                   setCurrentFilters({...CurrentFilters, orientation: `${item}`});
                 }}>
-                <Text style={{backgroundColor:`${CurrentFilters.orientation==item?'yellow':''}`}} className="mr-6 p-4 bg-slate-300 rounded-full">
+                <Text  className="mr-6 p-4 bg-slate-300 rounded-full">
                   {item}
                 </Text>
               </TouchableOpacity>
@@ -146,7 +146,7 @@ const FilterView = () => {
           <Text className="text-slate-400">Apply</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </>
   );
 };
 

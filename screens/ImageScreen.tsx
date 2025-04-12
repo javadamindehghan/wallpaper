@@ -6,9 +6,12 @@ import {
   Alert,
   StyleSheet,
   Dimensions,
+ 
 } from 'react-native';
-import React from 'react';
+import * as Progress from 'react-native-progress';
+import React, { useState } from 'react';
 import RNFS from 'react-native-fs';
+import Share from 'react-native-share';
 import {
   ArrowDownTrayIcon,
   PresentationChartBarIcon,
@@ -17,32 +20,28 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {hits} from '../type';
 import {BlurView} from '@react-native-community/blur';
-import { Share } from 'react-native';
+import ShareIcon from '../Icon/IconShare';
+import IconShare from '../Icon/IconShare';
+
 const {height, width} = Dimensions.get('window');
 export default function ImageScreen({route}: {route: {params: hits}}) {
   const navigation = useNavigation();
-  const {webformatURL, imageWidth, imageHeight,} = route.params;
-  const shareContent = async () => {
-    try {
-      const result = await Share.share({
-        message: '   اشتراک  تصویر ',
-         url: webformatURL
-        
-      });
+  const {webformatURL, imageWidth, imageHeight ,imageURL,userImageURL ,id} = route.params;
+  const [isLoading,setIsLoading]=useState<boolean>(false)
+  const shareImage = async (imagePath:string) => {
+    const shareOptions = {
+      title: 'Share Image',
+      url: imagePath, // آدرس فایل
+      type: 'image/jpeg', // نوع فایل
+    };
   
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // کاربر یک فعالیت خاص را انتخاب کرده است
-        } else {
-          // اشتراک‌گذاری موفقیت‌آمیز بود
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // کاربر پنجره اشتراک‌گذاری را بسته است
-      }
-    } catch (error:any) {
-     Alert.alert(error)
+    try {
+      await Share.open(shareOptions);
+      Alert.alert('عکس با موفقیت به اشتراک گذاشته شد!');
+    } catch (error) {
+      Alert.alert('خطا در به اشتراک‌گذاری: ' + error);
     }
-  }
+  };
   const GetSize = () => {
     const acceptRatio = imageWidth / imageHeight;
     const maxW = 0.92 * width;
@@ -55,9 +54,13 @@ export default function ImageScreen({route}: {route: {params: hits}}) {
   };
 
   const downloadImage = async (uri:string) => {
+    setIsLoading(true)
+    console.log(imageURL);
+    console.log(userImageURL);
+    
     const imageUrl = uri; // آدرس عکس
     const fileName = imageUrl.split('/').pop();
-    const downloadDest = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+    const downloadDest = `${RNFS.PicturesDirectoryPath}/${fileName}.jpg`;
     try {
       const result = await RNFS.downloadFile({
         fromUrl: imageUrl,
@@ -66,14 +69,16 @@ export default function ImageScreen({route}: {route: {params: hits}}) {
 
       if (result.statusCode === 200) {
         Alert.alert('دانلود موفقیت‌آمیز بود!');
+        setIsLoading(false)
       } else {
-        Alert.alert('خطا در دانلود.');
+        Alert.alert('اتصال خود به اینترنت و فیلتر شکن را چک کنید');
+        setIsLoading(false)
       }
     } catch (error) {
-      Alert.alert('خطا: ' + error);
+      Alert.alert('اتصال خود به اینترنت و فیلتر شکن را چک کنید'+error);
+      setIsLoading(false)
     }
   };
-
 
   return (
     <>
@@ -102,16 +107,17 @@ export default function ImageScreen({route}: {route: {params: hits}}) {
               onPress={() => {
                 downloadImage(webformatURL)
               }}>
-              <ArrowDownTrayIcon size={24} color="white" />
+              {isLoading ? <Progress.CircleSnail color={['red', 'green', 'blue']} /> :<ArrowDownTrayIcon size={24} color="white" /> }
+             
             </TouchableOpacity>
          
        
             <TouchableOpacity
              className='mx-4  p-2 bg-gray-500 rounded-2xl'
               onPress={() => {
-                shareContent()
+                shareImage(webformatURL)
               }}>
-              <PresentationChartBarIcon size={24} color="white" />
+           <IconShare/>
             </TouchableOpacity>
       
         </View>
