@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {debounce} from 'lodash';
 import {
   Bars3BottomRightIcon,
   MagnifyingGlassIcon,
@@ -20,12 +19,15 @@ import {
 import Categories from '../components/Categories';
 import {ApiCall} from '../api/mageApi';
 import {categoriesType, FiltersType, hits} from '../type';
+import * as Progress from 'react-native-progress';
 import ImageGrid from '../components/ImageGrid';
 import FiltersModal from '../components/FiltersModal';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {useStore} from '../store/Store';
+import {set} from 'lodash';
 const {height, width} = Dimensions.get('window');
 export default function HomeScreen() {
+  const [isloading, setIsloading] = useState<boolean>(true);
   const scrollViewRef = useRef<ScrollView>(null);
   const Page = useRef<number>(2);
   const {count} = useStore();
@@ -42,26 +44,30 @@ export default function HomeScreen() {
       category: currentCategories,
       ...count,
     });
-    if (!result) {
-      Alert.alert('اتصال به اینترنت وفیلتر شکن را چک کنید');
-    } else {
+
+    if (result) {
       setImage(result?.hits);
+      setIsloading(false);
+    } else {
+      setIsloading(true);
+      Alert.alert('no');
     }
   };
   const HandelChangeCategories = (categories: categoriesType) => {
+    setIsloading(true);
+
     setCurrentCategories(categories);
     SetSearchValue('');
     Page.current = 2;
   };
   const GetImageSearch = async () => {
     const result = await ApiCall('/', {q: SearchValue, ...count});
-    setImage(result?.hits);
-    Page.current = 2;
-  };
-
-  const handleChangeFilters = (filter: FiltersType) => {
-    setCurrentFilter(filter);
-    console.log(CurrentFilter?.colors);
+    if (result) {
+      setImage(result?.hits);
+      Page.current = 2;
+      setIsloading(false);
+    }else{setIsloading(true);}
+    
   };
   const nextPage = async () => {
     if (SearchValue) {
@@ -106,6 +112,8 @@ export default function HomeScreen() {
       layoutMeasurement.height + contentOffset.y >= contentSize.height - 1;
     if (isAtBottom) {
       console.log('Reached the bottom!');
+      console.log(isloading);
+
       nextPage();
     }
   };
@@ -123,6 +131,9 @@ export default function HomeScreen() {
   useEffect(() => {
     GetImageCategories();
   }, [currentCategories]);
+  useEffect(() => {
+    GetImageCategories();
+  }, []);
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
@@ -158,6 +169,7 @@ export default function HomeScreen() {
             value={SearchValue}
             onChangeText={value => {
               SetSearchValue(value);
+          setIsloading(true)
             }}
             className="text-center font-bold "
             style={{width: 0.7 * width, fontSize: 0.02 * height}}
@@ -181,13 +193,20 @@ export default function HomeScreen() {
           />
         </View>
         {/* image grid */}
-        <View>{Image?.length && <ImageGrid image={Image} />}</View>
+
+        {isloading ? (
+          <View className="flex-1 justify-center items-center p-8">
+            {' '}
+            <Progress.Circle size={60} indeterminate={true} />{' '}
+          </View>
+        ) : (
+          <View>{Image?.length && <ImageGrid image={Image} />}</View>
+        )}
       </ScrollView>
+
       {/* Filter */}
-   
-     
-        <FiltersModal bottomSheetModalRef={bottomSheetModalRef} />
-      
+
+      <FiltersModal bottomSheetModalRef={bottomSheetModalRef} />
     </View>
   );
 }

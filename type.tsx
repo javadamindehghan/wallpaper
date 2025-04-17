@@ -64,7 +64,8 @@ export type colors =
   | 'white'
   | 'gray'
   | 'black'
-  | 'brown';
+  | 'brown'|
+  '';
 export type order = 'popular' | 'latest';
 export type orientation = 'all' | 'horizontal' | 'vertical';
 export type image_type = 'all' | 'photo' | 'illustration' | 'vector';
